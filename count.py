@@ -14,13 +14,15 @@ def main() -> None:
 
     with INPUT_FILE.open("r") as rf:
         line: str = rf.readline()
-        line_count: int = 0
+        # line_count: int = 0
         while line:
             line = line[:-1] # remove the \n at the end of a line
             if line.startswith(">"):
                 res: Optional[re.Match] = CHR_NUM_PATTERN.findall(line)
-                chromosome = "unplaced" if res is None else res[0]
-                n_count[chromosome] = {} # intialize the k-n dict
+                print(res)
+                chromosome = "unplaced" if not res else res[0]
+                if chromosome not in n_count:
+                    n_count[chromosome] = {} # intialize the k-n dict
             else:
                 # This else block will run for a majority of the fasta file
                 for char in line:
@@ -33,7 +35,7 @@ def main() -> None:
                         temp_count = 0
 
             line = rf.readline()            
-            line_count += 1
+            #line_count += 1
             #print(n_count)                        
 
     with open("output.json", "w") as wf:
