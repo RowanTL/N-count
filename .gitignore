@@ -5,3 +5,6 @@ GCF.fna
 # Jupyter Notebook files
 .ipynb_checkpoints
 .virtual_documents
+
+# Graph folder
+graphs
