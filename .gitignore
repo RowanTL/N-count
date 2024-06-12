@@ -1,2 +1,7 @@
+# Fasta files (3GB) so don't push lol
 GCA.fna
 GCF.fna
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+.virtual_documents
