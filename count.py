@@ -5,61 +5,55 @@ import json
 
 INPUT_FILE: Final[Path] = Path("GCF.fna")
 CHR_NUM_PATTERN: Final[re.Pattern] = re.compile(r"chromosome (\d+|X+|Y+)")
+AMBIGUOUS_BASES: Final[set[str]] = {"N", "R", "Y", "S", "W", "K", "M", "B", "D", "H", "V"}
 
 
-def add_chromosome(
-    n_count: dict[str, dict[int, int]], chromosome: str, count: int
-) -> dict[str, dict[int, int]]:
-    if count not in n_count[chromosome]:
-        n_count[chromosome][count] = 0
-    n_count[chromosome][count] += 1
-
-    return n_count
 
 
 def main() -> None:
-    # Form of {chromosome label : {k-N # : How many times k-N occures}}
-    n_count: dict[str, dict[int, int]] = {}
-    chromosome: str = ""
-    temp_count: int = 0
+    # Initialize a dictionary for each ambiguous base
+    counts: dict[str, dict[str, dict[int, int]]] = {base: {} for base in AMBIGUOUS_BASES}
 
     with INPUT_FILE.open("r") as rf:
+        chromosome: str = ""
+        current_base: Optional[str] = None
+        temp_count: int = 0
+
         line: str = rf.readline()
-        line_count: int = 0
         while line:
-            # counld optimize here by checking for \n with an if statement
-            # rather than cutting it out here
             line = line[:-1]  # remove the \n at the end of a line
             if line.startswith(">"):
-                if temp_count != 0:
-                    n_count = add_chromosome(n_count, chromosome, temp_count)
-                    temp_count = 0
-
                 res: Optional[re.Match] = CHR_NUM_PATTERN.findall(line)
-                print(res)
                 chromosome = "unplaced" if not res else res[0]
-                if chromosome not in n_count:
-                    n_count[chromosome] = {}  # intialize the k-n dict
-
-            # This else block will run for a majority of the fasta file
+                for base in AMBIGUOUS_BASES:
+                    if chromosome not in counts[base]:
+                        counts[base][chromosome] = {}  # initialize the k-n dict for each base
             else:
                 for char in line:
-                    if char == "N":
-                        temp_count += 1
-                    elif temp_count != 0:
-                        n_count = add_chromosome(n_count, chromosome, temp_count)
-                        temp_count = 0
+                    if char in AMBIGUOUS_BASES:
+                        if char == current_base:
+                            temp_count += 1
+                        else:
+                            if current_base and temp_count != 0:
+                                if temp_count not in counts[current_base][chromosome]:
+                                    counts[current_base][chromosome][temp_count] = 0
+                                counts[current_base][chromosome][temp_count] += 1
+                            current_base = char
+                            temp_count = 1
+                    else:
+                        if current_base and temp_count != 0:
+                            if temp_count not in counts[current_base][chromosome]:
+                                counts[current_base][chromosome][temp_count] = 0
+                            counts[current_base][chromosome][temp_count] += 1
+                            current_base = None
+                            temp_count = 0
 
             line = rf.readline()
-            line_count += 1
 
-    # last addition as file could end and Ns could be lost
-    if temp_count != 0:
-        n_count = add_chromosome(n_count, chromosome, temp_count)
-
-    with open("output.json", "w") as wf:
-        wf.write(json.dumps(n_count))
-
+    # Write each dictionary to its respective JSON file
+    for base in AMBIGUOUS_BASES:
+        with open(f"{base}.json", "w") as wf:
+            wf.write(json.dumps(counts[base], indent=4))
 
 if __name__ == "__main__":
     main()
