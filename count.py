@@ -27,6 +27,8 @@ def main() -> None:
         line: str = rf.readline()
         line_count: int = 0
         while line:
+            # counld optimize here by checking for \n with an if statement
+            # rather than cutting it out here
             line = line[:-1]  # remove the \n at the end of a line
             if line.startswith(">"):
                 if temp_count != 0:
@@ -35,7 +37,6 @@ def main() -> None:
 
                 res: Optional[re.Match] = CHR_NUM_PATTERN.findall(line)
                 print(res)
-                # old_chromosome: str = chromosome
                 chromosome = "unplaced" if not res else res[0]
                 if chromosome not in n_count:
                     n_count[chromosome] = {}  # intialize the k-n dict
@@ -51,7 +52,6 @@ def main() -> None:
 
             line = rf.readline()
             line_count += 1
-            # print(n_count)
 
     # last addition as file could end and Ns could be lost
     if temp_count != 0:
