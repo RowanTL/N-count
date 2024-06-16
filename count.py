@@ -29,9 +29,9 @@ def main() -> None:
         while line:
             line = line[:-1]  # remove the \n at the end of a line
             if line.startswith(">"):
-                if temp_count != 0: 
+                if temp_count != 0:
                     n_count = add_chromosome(n_count, chromosome, temp_count)
-                    temp_count = 0            
+                    temp_count = 0
 
                 res: Optional[re.Match] = CHR_NUM_PATTERN.findall(line)
                 print(res)
@@ -40,7 +40,7 @@ def main() -> None:
                 if chromosome not in n_count:
                     n_count[chromosome] = {}  # intialize the k-n dict
 
-           # This else block will run for a majority of the fasta file
+            # This else block will run for a majority of the fasta file
             else:
                 for char in line:
                     if char == "N":
