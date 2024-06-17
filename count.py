@@ -5,10 +5,24 @@ import json
 
 INPUT_FILE: Final[Path] = Path("GCF.fna")
 CHR_NUM_PATTERN: Final[re.Pattern] = re.compile(r"chromosome (\d+|X+|Y+)")
-AMBIGUOUS_BASES: Final[set[str]] = {"N", "R", "Y", "S", "W", "K", "M", "B", "D", "H", "V"}
+AMBIGUOUS_BASES: Final[set[str]] = {
+    "N",
+    "R",
+    "Y",
+    "S",
+    "W",
+    "K",
+    "M",
+    "B",
+    "D",
+    "H",
+    "V",
+}
 
 
-def add_count(counts: dict[str, dict[str, dict[int, int]]], chromosome: str, base: str, count: int) -> None:
+def add_count(
+    counts: dict[str, dict[str, dict[int, int]]], chromosome: str, base: str, count: int
+) -> None:
     if count not in counts[base][chromosome]:
         counts[base][chromosome][count] = 0
     counts[base][chromosome][count] += 1
@@ -16,7 +30,9 @@ def add_count(counts: dict[str, dict[str, dict[int, int]]], chromosome: str, bas
 
 def main() -> None:
     # Initialize a dictionary for each ambiguous base
-    counts: dict[str, dict[str, dict[int, int]]] = {base: {} for base in AMBIGUOUS_BASES}
+    counts: dict[str, dict[str, dict[int, int]]] = {
+        base: {} for base in AMBIGUOUS_BASES
+    }
 
     with INPUT_FILE.open("r") as rf:
         chromosome: str = ""
@@ -35,10 +51,12 @@ def main() -> None:
 
                 res: Optional[re.Match] = CHR_NUM_PATTERN.findall(line)
                 chromosome = "unplaced" if not res else res[0]
-                #print(f"Processing {chromosome}")
+                # print(f"Processing {chromosome}")
                 for base in AMBIGUOUS_BASES:
                     if chromosome not in counts[base]:
-                        counts[base][chromosome] = {}  # initialize the k-n dict for each base
+                        counts[base][
+                            chromosome
+                        ] = {}  # initialize the k-n dict for each base
             else:
                 for char in line:
                     if char in AMBIGUOUS_BASES:
@@ -65,6 +83,7 @@ def main() -> None:
     for base in AMBIGUOUS_BASES:
         with open(f"{base}.json", "w") as wf:
             wf.write(json.dumps(counts[base], indent=4))
+
 
 if __name__ == "__main__":
     main()
