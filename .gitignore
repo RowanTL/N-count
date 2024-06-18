@@ -10,3 +10,6 @@ GCF.fna
 graphs
 # json_files
 fna_files
+
+# testing files
+temp*.txt
