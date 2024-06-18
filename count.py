@@ -21,7 +21,7 @@ AMBIGUOUS_BASES: Final[set[str]] = {
 
 
 def add_count(
-    counts: dict[str, dict[str, dict[int, int]]], chromosome: str, base: str, count: int
+    counts: dict[str, dict[str, dict[int, list[int, tuple[int, int]]]]], chromosome: str, base: str, count: int
 ) -> None:
     if count not in counts[base][chromosome]:
         counts[base][chromosome][count] = 0
@@ -30,7 +30,8 @@ def add_count(
 
 def main() -> None:
     # Initialize a dictionary for each ambiguous base
-    counts: dict[str, dict[str, dict[int, int]]] = {
+    # {Base character: {Chromosome #: {k-N: [# occurrences, (starting pos, ending pos)]}}}
+    counts: dict[str, dict[str, dict[int, list[int, tuple[int, int]]]]] = {
         base: {} for base in AMBIGUOUS_BASES
     }
 
@@ -38,6 +39,8 @@ def main() -> None:
         chromosome: str = ""
         current_base: Optional[str] = None
         temp_count: int = 0
+        global_line_count: int = 1  # Keeps track of the current line in GCF.fna
+        local_line_count: int = 1  # Keeps track of the line relative to the chromosome's header
 
         line: str = rf.readline()
         while line:
@@ -50,6 +53,7 @@ def main() -> None:
                     temp_count = 0
 
                 res: Optional[re.Match] = CHR_NUM_PATTERN.findall(line)
+                print(res)
                 chromosome = "unplaced" if not res else res[0]
                 # print(f"Processing {chromosome}")
                 for base in AMBIGUOUS_BASES:
@@ -57,8 +61,10 @@ def main() -> None:
                         counts[base][
                             chromosome
                         ] = {}  # initialize the k-n dict for each base
+
+                local_line_count = 1
             else:
-                for char in line:
+                for idx, char in enumerate(line):
                     if char in AMBIGUOUS_BASES:
                         if char == current_base:
                             temp_count += 1
@@ -72,8 +78,10 @@ def main() -> None:
                             add_count(counts, chromosome, current_base, temp_count)
                             current_base = None
                             temp_count = 0
+                local_line_count += 1
 
             line = rf.readline()
+            global_line_count += 1
 
         # Handle any remaining counts at the end of the file
         if current_base and temp_count != 0:

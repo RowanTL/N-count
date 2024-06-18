@@ -6,5 +6,7 @@ GCF.fna
 .ipynb_checkpoints
 .virtual_documents
 
-# Graph folder
+# folders
 graphs
+json_files
+fna_files
