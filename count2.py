@@ -13,18 +13,19 @@ CHR_NUM_PATTERN: Final[re.Pattern] = re.compile(r"chromosome (\d+|X+|Y+)")
 NUC_PATTERN: Final[re.Pattern] = re.compile(r"(R|Y|S|W|K|M|B|D|H|V|N)+", re.IGNORECASE)
 
 def main() -> None:
+    # {Chromosome #: {k-N: [# occurrences, (starting pos, ending pos)]}}
+    count: dict[dict[int, str, list[int, tuple[int, int]]]] = {}
     with FORMAT_FNA_FILE.open("r") as rf:
         for line in rf:
             if line.startswith(">"):
                 print(line)
                 res = CHR_NUM_PATTERN.findall(line)
                 chromosome = "unplaced" if not res else res[0]
+                count[chromosome] = []
             else:
                 for match in NUC_PATTERN.finditer(line):
-                    print(match)
-                    input("continue? ")
-                pass
-    
+                    count[chromosome]
+                    
 
 if __name__ == "__main__":
     main()
