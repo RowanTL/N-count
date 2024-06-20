@@ -3,7 +3,7 @@ from typing import Final, Optional
 import re
 import json
 
-INPUT_FILE: Final[Path] = Path("GCF.fna")
+INPUT_FILE: Final[Path] = Path("fna_files/GCF.fna")
 CHR_NUM_PATTERN: Final[re.Pattern] = re.compile(r"chromosome (\d+|X+|Y+)")
 AMBIGUOUS_BASES: Final[set[str]] = {
     "N",
@@ -89,7 +89,7 @@ def main() -> None:
 
     # Write each dictionary to its respective JSON file
     for base in AMBIGUOUS_BASES:
-        with open(f"{base}.json", "w") as wf:
+        with open(f"json_files\/{base}.json", "w") as wf:
             wf.write(json.dumps(counts[base], indent=4))
 
 
