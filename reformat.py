@@ -29,10 +29,10 @@ import re
 from pathlib import Path
 from typing import Final
 
-OLD_FNA_PATH: Final[Path] = Path(r"fna_files/GCF.fna")
-# OLD_FNA_PATH: Final[Path] = Path(r"temp2.txt")
-# NEW_FNA_PATH: Final[Path] = Path(r"fna_files/chromosomes/")
-NEW_FNA_PATH: Final[Path] = Path(r"fna_files/GCF_formatted.fna")
+# OLD_FNA_PATH: Final[Path] = Path(r"fna_files/GCF.fna")
+OLD_FNA_PATH: Final[Path] = Path(r"temp2.txt")
+# NEW_FNA_PATH: Final[Path] = Path(r"fna_files/GCF_formatted.fna")
+NEW_FNA_PATH: Final[Path] = Path(r"output.txt")
 CHR_NUM_PATTERN: Final[re.Pattern] = re.compile(r"chromosome (\d+|X+|Y+)")
 
 
