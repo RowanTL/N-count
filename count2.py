@@ -8,8 +8,8 @@ from typing import Final
 from pathlib import Path
 from collections import defaultdict
 
-FORMAT_FNA_FILE: Final[Path] = Path("output.txt")
-# FORMAT_FNA_FILE: Final[Path] = Path("fna_files/GCF_formatted.fna")
+# FORMAT_FNA_FILE: Final[Path] = Path("output.txt")
+FORMAT_FNA_FILE: Final[Path] = Path("fna_files/GCF_formatted.fna")
 OUTPUT_FILE: Final[Path] = Path("output.json")
 CHR_NUM_PATTERN: Final[re.Pattern] = re.compile(r"chromosome (\d+|X+|Y+)")
 NUC_PATTERN: Final[re.Pattern] = re.compile(r"(R|Y|S|W|K|M|B|D|H|V|N)+", re.IGNORECASE)
@@ -31,6 +31,8 @@ def main() -> None:
                 chromosome = "unplaced" if not res else res[0]
                 count[chromosome] = {}
             else:
+                # -1 means len of the entire contig
+                count[chromosome][-1] = [1, [(0, len(line))]]
                 for match in NUC_PATTERN.finditer(line):
                     start_pos, end_pos = match.start(), match.end()
                     n_len = end_pos - start_pos
